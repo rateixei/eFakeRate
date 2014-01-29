@@ -14,7 +14,6 @@ string  suffix          = "SUFFIX";
 bool    verbose         = false;
 bool    mc              = false;
 bool    qcd             = false;
-bool	delet		= false;
 
 reweight::LumiReWeighting LumiWeightsD_;
 reweight::LumiReWeighting LumiWeightsD_sys_;
@@ -65,8 +64,6 @@ void eFakeSel::Begin(TTree *tree)
    jobTree->GetEntry();
    triggerSelector = new TriggerSelector(selection, period, *triggerNames);
 
-   //histoFile = new TFile("/uscms_data/d3/zdemirag/HZg_Ntuples/analyzer/CMSSW_5_3_8_patch1/src/Analyzer_v2/higgsHistograms_SUFFIX.root","RECREATE");
-
    histoFile = new TFile("higgsHistograms_SUFFIX.root","RECREATE");
    histoFile->cd();
   
@@ -75,92 +72,70 @@ void eFakeSel::Begin(TTree *tree)
    AnDir = (TDirectory*)histoFile->GetDirectory("Analyzer");
 
 
-if(verbose) cout << "CREATING TREE..." << endl;
+   if(verbose) cout << "CREATING TREE..." << endl;
 
-TZee = new TTree("TZee", "Tree with Z Candidates");
-TZep = new TTree("TZep", "Tree with Z Candidates");
-TZek = new TTree("TZek", "Tree with Z Candidates");
-TZpp = new TTree("TZpp", "Tree with Z Candidates");
-TZpk = new TTree("TZpk", "Tree with Z Candidates");
-TZkk = new TTree("TZkk", "Tree with Z Candidates");
+   TZee = new TTree("TZee", "Tree with Z Candidates");
+   TZep = new TTree("TZep", "Tree with Z Candidates");
+   TZek = new TTree("TZek", "Tree with Z Candidates");
+   TZpp = new TTree("TZpp", "Tree with Z Candidates");
+   TZpk = new TTree("TZpk", "Tree with Z Candidates");
+   TZkk = new TTree("TZkk", "Tree with Z Candidates");
 
+   Zee = new TLorentzVector(-100, -100, 0, 0);
+   Zep = new TLorentzVector(-100, -100, 0, 0);
+   Zek = new TLorentzVector(-100, -100, 0, 0);
+   Zpp = new TLorentzVector(-100, -100, 0, 0);
+   Zpk = new TLorentzVector(-100, -100, 0, 0);
+   Zkk = new TLorentzVector(-100, -100, 0, 0);
 
-Zee = new TLorentzVector(-100, -100, 0, 0);
-Zep = new TLorentzVector(-100, -100, 0, 0);
-Zek = new TLorentzVector(-100, -100, 0, 0);
-Zpp = new TLorentzVector(-100, -100, 0, 0);
-Zpk = new TLorentzVector(-100, -100, 0, 0);
-Zkk = new TLorentzVector(-100, -100, 0, 0);
+   Zee_E1 = new TLorentzVector(-100, -100, 0, 0);
+   Zee_E2 = new TLorentzVector(-100, -100, 0, 0);
+   Zep_E = new TLorentzVector(-100, -100, 0, 0);
+   Zep_P = new TLorentzVector(-100, -100, 0, 0);
+   Zek_E = new TLorentzVector(-100, -100, 0, 0);
+   Zek_K = new TLorentzVector(-100, -100, 0, 0);
+   Zpp_P1 = new TLorentzVector(-100, -100, 0, 0);
+   Zpp_P2 = new TLorentzVector(-100, -100, 0, 0);
+   Zpk_P = new TLorentzVector(-100, -100, 0, 0);
+   Zpk_K = new TLorentzVector(-100, -100, 0, 0);
+   Zkk_K1 = new TLorentzVector(-100, -100, 0, 0);
+   Zkk_K2 = new TLorentzVector(-100, -100, 0, 0);
 
-Zee_E1 = new TLorentzVector(-100, -100, 0, 0);
-Zee_E2 = new TLorentzVector(-100, -100, 0, 0);
-Zep_E = new TLorentzVector(-100, -100, 0, 0);
-Zep_P = new TLorentzVector(-100, -100, 0, 0);
-Zek_E = new TLorentzVector(-100, -100, 0, 0);
-Zek_K = new TLorentzVector(-100, -100, 0, 0);
-Zpp_P1 = new TLorentzVector(-100, -100, 0, 0);
-Zpp_P2 = new TLorentzVector(-100, -100, 0, 0);
-Zpk_P = new TLorentzVector(-100, -100, 0, 0);
-Zpk_K = new TLorentzVector(-100, -100, 0, 0);
-Zkk_K1 = new TLorentzVector(-100, -100, 0, 0);
-Zkk_K2 = new TLorentzVector(-100, -100, 0, 0);
+   pfMET = new TVector2(-10,-10);
 
-pfMET = new TVector2(-10,-10);
+   b_Zee          = TZee->Branch("Zee", "TLorentzVector", &Zee);
+   b_Zep          = TZep->Branch("Zep", "TLorentzVector", &Zep);
+   b_Zek          = TZek->Branch("Zek", "TLorentzVector", &Zek);
+   b_Zpp          = TZpp->Branch("Zpp", "TLorentzVector", &Zpp);
+   b_Zpk          = TZpk->Branch("Zpk", "TLorentzVector", &Zpk);
+   b_Zkk          = TZkk->Branch("Zkk", "TLorentzVector", &Zkk);
+   b_Zee_E1       = TZee->Branch("Zee_O1", "TLorentzVector", &Zee_E1);
+   b_Zee_E2       = TZee->Branch("Zee_O2", "TLorentzVector", &Zee_E2);
+   b_Zep_E        = TZep->Branch("Zep_O1", "TLorentzVector", &Zep_E );
+   b_Zep_P        = TZep->Branch("Zep_O2", "TLorentzVector", &Zep_P );
+   b_Zek_E        = TZek->Branch("Zek_O1", "TLorentzVector", &Zek_E );
+   b_Zek_K        = TZek->Branch("Zek_O2", "TLorentzVector", &Zek_K );
+   b_Zpp_P1       = TZpp->Branch("Zpp_O1", "TLorentzVector", &Zpp_P1);
+   b_Zpp_P2       = TZpp->Branch("Zpp_O2", "TLorentzVector", &Zpp_P2);
+   b_Zpk_P        = TZpk->Branch("Zpk_O1", "TLorentzVector", &Zpk_P );
+   b_Zpk_K        = TZpk->Branch("Zpk_O2", "TLorentzVector", &Zpk_K );
+   b_Zkk_K1       = TZkk->Branch("Zkk_O1", "TLorentzVector", &Zkk_K1);
+   b_Zkk_K2       = TZkk->Branch("Zkk_O2", "TLorentzVector", &Zkk_K2);
 
-b_Zee          = TZee->Branch("Zee", "TLorentzVector", &Zee);
-b_Zep          = TZep->Branch("Zep", "TLorentzVector", &Zep);
-b_Zek          = TZek->Branch("Zek", "TLorentzVector", &Zek);
-b_Zpp          = TZpp->Branch("Zpp", "TLorentzVector", &Zpp);
-b_Zpk          = TZpk->Branch("Zpk", "TLorentzVector", &Zpk);
-b_Zkk          = TZkk->Branch("Zkk", "TLorentzVector", &Zkk);
-b_Zee_E1       = TZee->Branch("Zee_O1", "TLorentzVector", &Zee_E1);
-b_Zee_E2       = TZee->Branch("Zee_O2", "TLorentzVector", &Zee_E2);
-b_Zep_E        = TZep->Branch("Zep_O1", "TLorentzVector", &Zep_E );
-b_Zep_P        = TZep->Branch("Zep_O2", "TLorentzVector", &Zep_P );
-b_Zek_E        = TZek->Branch("Zek_O1", "TLorentzVector", &Zek_E );
-b_Zek_K        = TZek->Branch("Zek_O2", "TLorentzVector", &Zek_K );
-b_Zpp_P1       = TZpp->Branch("Zpp_O1", "TLorentzVector", &Zpp_P1);
-b_Zpp_P2       = TZpp->Branch("Zpp_O2", "TLorentzVector", &Zpp_P2);
-b_Zpk_P        = TZpk->Branch("Zpk_O1", "TLorentzVector", &Zpk_P );
-b_Zpk_K        = TZpk->Branch("Zpk_O2", "TLorentzVector", &Zpk_K );
-b_Zkk_K1       = TZkk->Branch("Zkk_O1", "TLorentzVector", &Zkk_K1);
-b_Zkk_K2       = TZkk->Branch("Zkk_O2", "TLorentzVector", &Zkk_K2);
-
-b_Zee_ntrks       = TZee->Branch("Zee_ntrks", &ntrks, "ntrks/F");
-b_Zep_ntrks       = TZep->Branch("Zep_ntrks", &ntrks, "ntrks/F");
-b_Zek_ntrks       = TZek->Branch("Zek_ntrks", &ntrks, "ntrks/F");
-b_Zpp_ntrks       = TZpp->Branch("Zpp_ntrks", &ntrks, "ntrks/F");
-b_Zpk_ntrks       = TZpk->Branch("Zpk_ntrks", &ntrks, "ntrks/F");
-b_Zkk_ntrks       = TZkk->Branch("Zkk_ntrks", &ntrks, "ntrks/F");
-b_Zee_MET         = TZee->Branch("Zee_MET", "TVector2", &pfMET);
-b_Zep_MET         = TZep->Branch("Zep_MET", "TVector2", &pfMET);
-b_Zek_MET         = TZek->Branch("Zek_MET", "TVector2", &pfMET);
-b_Zpp_MET         = TZpp->Branch("Zpp_MET", "TVector2", &pfMET);
-b_Zpk_MET         = TZpk->Branch("Zpk_MET", "TVector2", &pfMET);
-b_Zkk_MET         = TZkk->Branch("Zkk_MET", "TVector2", &pfMET);
-
+   b_Zee_ntrks       = TZee->Branch("Zee_ntrks", &ntrks, "ntrks/F");
+   b_Zep_ntrks       = TZep->Branch("Zep_ntrks", &ntrks, "ntrks/F");
+   b_Zek_ntrks       = TZek->Branch("Zek_ntrks", &ntrks, "ntrks/F");
+   b_Zpp_ntrks       = TZpp->Branch("Zpp_ntrks", &ntrks, "ntrks/F");
+   b_Zpk_ntrks       = TZpk->Branch("Zpk_ntrks", &ntrks, "ntrks/F");
+   b_Zkk_ntrks       = TZkk->Branch("Zkk_ntrks", &ntrks, "ntrks/F");
+   b_Zee_MET         = TZee->Branch("Zee_MET", "TVector2", &pfMET);
+   b_Zep_MET         = TZep->Branch("Zep_MET", "TVector2", &pfMET);
+   b_Zek_MET         = TZek->Branch("Zek_MET", "TVector2", &pfMET);
+   b_Zpp_MET         = TZpp->Branch("Zpp_MET", "TVector2", &pfMET);
+   b_Zpk_MET         = TZpk->Branch("Zpk_MET", "TVector2", &pfMET);
+   b_Zkk_MET         = TZkk->Branch("Zkk_MET", "TVector2", &pfMET);
 
 
-
-
-/*
-  OutTree = new TTree("AnalyzerTree", "HZ(nunu)Gamma Analyzer Tree");
-  Ze_e = new TObjArray();
-  Zp_e = new TObjArray();
-  Zp_p = new TObjArray();
-  Zp_pe = new TObjArray();
-  Zpe_pe = new TObjArray();
-  Zpe_e = new TObjArray();
-  pfMET = new TVector2(-10,-10);
-  b_Ze_e                = OutTree->Branch("Ze_e","TObjArray", &Ze_e);
-  b_Zp_e                = OutTree->Branch("Zp_e","TObjArray", &Zp_e);
-  b_Zp_p                = OutTree->Branch("Zp_p","TObjArray", &Zp_p);
-  b_Zp_pe               = OutTree->Branch("Zp_pe","TObjArray", &Zp_pe);
-  b_Zpe_pe              = OutTree->Branch("Zpe_pe","TObjArray", &Zpe_pe);
-  b_Zpe_e               = OutTree->Branch("Zpe_e","TObjArray", &Zpe_e);
-  b_pfMET               = OutTree->Branch("pfMET","TVector2", &pfMET);
-  b_ntrks               = OutTree->Branch("ntrks",  &ntrks);
-*/
 if(verbose) cout << "INITIALIZING TREE VARIABLES..." << endl;
 
  // ch      nh       ph
@@ -185,58 +160,12 @@ if(verbose) cout << "INITIALIZING TREE VARIABLES..." << endl;
 
 void eFakeSel::SlaveBegin(TTree * /*tree*/)
 {
-   // The SlaveBegin() function is called after the Begin() function.
-   // When running with PROOF SlaveBegin() is called on each slave server.
-   // The tree argument is deprecated (on PROOF 0 is passed).
-
    TString option = GetOption();
-
 }
 
 Bool_t eFakeSel::Process(Long64_t entry)
 {
-/*
-Zee = new TLorentzVector(-100, -100, 0, 0);
-Zee_E1 = new TLorentzVector(-100, -100, 0, 0);
-Zee_E2 = new TLorentzVector(-100, -100, 0, 0);
-Zep = new TLorentzVector(-100, -100, 0, 0);
-Zep_E = new TLorentzVector(-100, -100, 0, 0);
-Zep_P = new TLorentzVector(-100, -100, 0, 0);
-Zek = new TLorentzVector(-100, -100, 0, 0);
-Zek_E = new TLorentzVector(-100, -100, 0, 0);
-Zek_K = new TLorentzVector(-100, -100, 0, 0);
-Zpp = new TLorentzVector(-100, -100, 0, 0);
-Zpp_P1 = new TLorentzVector(-100, -100, 0, 0);
-Zpp_P2 = new TLorentzVector(-100, -100, 0, 0);
-Zpk = new TLorentzVector(-100, -100, 0, 0);
-Zpk_P = new TLorentzVector(-100, -100, 0, 0);
-Zpk_K = new TLorentzVector(-100, -100, 0, 0);
-Zkk = new TLorentzVector(-100, -100, 0, 0);
-Zkk_K1 = new TLorentzVector(-100, -100, 0, 0);
-Zkk_K2 = new TLorentzVector(-100, -100, 0, 0);
-
-Zee_E1 = new TLorentzVector(-100, -100, 0, 0);
-Zee_E2 = new TLorentzVector(-100, -100, 0, 0);
-Zep_E = new TLorentzVector(-100, -100, 0, 0);
-Zep_P = new TLorentzVector(-100, -100, 0, 0);
-Zek_E = new TLorentzVector(-100, -100, 0, 0);
-Zek_K = new TLorentzVector(-100, -100, 0, 0);
-Zpp_P1 = new TLorentzVector(-100, -100, 0, 0);
-Zpp_P2 = new TLorentzVector(-100, -100, 0, 0);
-Zpk_P = new TLorentzVector(-100, -100, 0, 0);
-Zpk_K = new TLorentzVector(-100, -100, 0, 0);
-Zkk_K1 = new TLorentzVector(-100, -100, 0, 0);
-Zkk_K2 = new TLorentzVector(-100, -100, 0, 0);
-
-
-
-Zee = new TLorentzVector(-100, -100, 0, 0);
-Zee_E1 = new TLorentzVector(-100, -100, 0, 0);
-Zee_E2 = new TLorentzVector(-100, -100, 0, 0);
-
-
-*/
-pfMET = new TVector2(-10,-10);
+  pfMET = new TVector2(-10,-10);
   GetEntry(entry);
 
   if( entry % 1000 == 0 ) cout << "Processing event number: " << entry << endl;
@@ -256,14 +185,7 @@ pfMET = new TVector2(-10,-10);
   vector<TLorentzVector> Good_Photons;
   vector<TLorentzVector> Good_Electrons;
   vector<TLorentzVector> Good_eFakes;
-/*
-  Ze_e = new TObjArray();
-  Zp_e = new TObjArray();
-  Zp_p = new TObjArray();
-  Zp_pe = new TObjArray();
-  Zpe_pe = new TObjArray();
-  Zpe_e = new TObjArray();
-*/
+
   pfMET = new TVector2(-10,-10);
   TVector2 pfMet;
  
@@ -340,66 +262,30 @@ pfMET = new TVector2(-10,-10);
      } 
   }
 
-//cout << "Number of photons: " << Good_Photons.size() << endl;
-//cout << "Number of electrons: " << Good_Electrons.size() << endl;
-
 //Filling Z_ee
 if(Good_Electrons.size() > 1){
 //  cout << "NUMBER OF ELECTRONS > 1!!" << endl;
   for (Int_t i = 0; i < Good_Electrons.size(); i++){
      for (Int_t j = i+1; j < Good_Electrons.size(); j++){
-
-//	Zee = new TLorentzVector(-100, -100, 0, 0);
-//	Zee_E1 = new TLorentzVector(-100, -100, 0, 0);
-//	Zee_E2 = new TLorentzVector(-100, -100, 0, 0);
-
 	TLorentzVector ZTemp = Good_Electrons[i] + Good_Electrons[j];
 	TLorentzVector* ztemp = new TLorentzVector(ZTemp.Px(), ZTemp.Py(), ZTemp.Pz(), ZTemp.E());
 	Zee = ztemp;
 	Zee_E1 = &Good_Electrons[i];
 	Zee_E2 = &Good_Electrons[j];
-//	cout << "Filling Zee!! \t" << ztemp->M() << endl;
-//	cout << "\t E1: " << Zee_E1->Pt() << endl;
-//	cout << "\t E2: " << Zee_E2->Pt() << endl;
-//	cout << endl;
 	TZee->Fill();
-
-if(delet){
-	delete ztemp;
-	delete Zee;
-	delete Zee_E1;
-	delete Zee_E2;
-}
-//	cout << "Filling Zee!!! \t " << ztemp->M() << endl;
      }
   }
 }
 //Filling Z_pp
 if(Good_Photons.size() > 1){
-//cout << "FOUND TWO OR MORE PHOTONS!" << endl;
   for (Int_t i = 0; i < Good_Photons.size(); i++){
      for (Int_t j = i+1; j < Good_Photons.size(); j++){
-
-//	Zpp = new TLorentzVector(-100, -100, 0, 0);
-//	Zpp_P1 = new TLorentzVector(-100, -100, 0, 0);
-//	Zpp_P2 = new TLorentzVector(-100, -100, 0, 0);
-
 	TLorentzVector ZTemp = Good_Photons[i] + Good_Photons[j];
 	TLorentzVector* ztemp = new TLorentzVector(ZTemp.Px(), ZTemp.Py(), ZTemp.Pz(), ZTemp.E());
 	Zpp = ztemp;
 	Zpp_P1 = &Good_Photons[i];
 	Zpp_P2 = &Good_Photons[j];
-//	cout << "Filling Zpp!! \t" << ztemp->M() << endl;
-//	cout << "\t P1: " << Zpp_P1->Pt() << endl;
-//	cout << "\t P2: " << Zpp_P2->Pt() << endl;
-//	cout << endl;
 	TZpp->Fill();
-
-if(delet){
-	delete ztemp;
-	delete Zpp;
-	delete Zpp_P1;
-	delete Zpp_P1;}
      }
   }
 }
@@ -407,27 +293,12 @@ if(delet){
 if(Good_eFakes.size() > 1){
   for (Int_t i = 0; i < Good_eFakes.size(); i++){
      for (Int_t j = i+1; j < Good_eFakes.size(); j++){
-
-//	Zkk = new TLorentzVector(-100, -100, 0, 0);
-//	Zkk_K1 = new TLorentzVector(-100, -100, 0, 0);
-//	Zkk_K2 = new TLorentzVector(-100, -100, 0, 0);
-
 	TLorentzVector ZTemp = Good_eFakes[i] + Good_eFakes[j];
 	TLorentzVector* ztemp = new TLorentzVector(ZTemp.Px(), ZTemp.Py(), ZTemp.Pz(), ZTemp.E());
 	Zkk = ztemp;
 	Zkk_K1 = &Good_eFakes[i];
 	Zkk_K2 = &Good_eFakes[j];
-//	cout << "Filling Zkk!! \t" << ztemp->M() << endl;
-//	cout << "\t K1: " << Zkk_K1->Pt() << endl;
-//	cout << "\t K2: " << Zkk_K2->Pt() << endl;
-//	cout << endl;
 	TZkk->Fill();
-
-if(delet){
-	delete ztemp;
-	delete Zkk;
-	delete Zkk_K1;
-	delete Zkk_K2;}
      }
   }
 }
@@ -435,27 +306,12 @@ if(delet){
 if(Good_Photons.size() > 0 && Good_Electrons.size() > 0) {
   for (Int_t i = 0; i < Good_Photons.size(); i++){
      for (Int_t j = 0; j < Good_Electrons.size(); j++){
-
-//	Zep = new TLorentzVector(-100, -100, 0, 0);
-//	Zep_E = new TLorentzVector(-100, -100, 0, 0);
-//	Zep_P = new TLorentzVector(-100, -100, 0, 0);
-
 	TLorentzVector ZTemp = Good_Photons[i] + Good_Electrons[j];
 	TLorentzVector* ztemp = new TLorentzVector(ZTemp.Px(), ZTemp.Py(), ZTemp.Pz(), ZTemp.E());
 	Zep = ztemp;
 	Zep_E = &Good_Electrons[j];
 	Zep_P = &Good_Photons[i];
-//	cout << "Filling Zep!! \t" << ztemp->M() << endl;
-//	cout << "\t E: " << Zep_E->Pt() << endl;
-//	cout << "\t P: " << Zep_P->Pt() << endl;
-//	cout << endl;
 	TZep->Fill();
-
-if(delet){
-	delete ztemp;
-	delete Zep;
-	delete Zep_E;
-	delete Zep_P;}
      }
   }
 }
@@ -463,27 +319,12 @@ if(delet){
 if(Good_Photons.size() > 0 && Good_eFakes.size() > 0) {
   for (Int_t i = 0; i < Good_Photons.size(); i++){
      for (Int_t j = 0; j < Good_eFakes.size(); j++){
-
-//	Zpk = new TLorentzVector(-100, -100, 0, 0);
-//	Zpk_P = new TLorentzVector(-100, -100, 0, 0);
-//	Zpk_K = new TLorentzVector(-100, -100, 0, 0);
-
 	TLorentzVector ZTemp = Good_Photons[i] + Good_eFakes[j];
 	TLorentzVector* ztemp = new TLorentzVector(ZTemp.Px(), ZTemp.Py(), ZTemp.Pz(), ZTemp.E());
 	Zpk = ztemp;
 	Zpk_K = &Good_eFakes[j];
 	Zpk_P = &Good_Photons[i];
-//	cout << "Filling Zpk!! \t" << ztemp->M() << endl;
-//	cout << "\t P: " << Zpk_P->Pt() << endl;
-//	cout << "\t K: " << Zpk_K->Pt() << endl;
-//	cout << endl;
 	TZpk->Fill();
-
-if(delet){
-	delete ztemp;
-	delete Zpk;
-	delete Zpk_K;
-	delete Zpk_P;}
      }
   }
 }
@@ -491,95 +332,32 @@ if(delet){
 if(Good_eFakes.size() > 0 && Good_Electrons.size() > 0) {
   for (Int_t i = 0; i < Good_eFakes.size(); i++){
      for (Int_t j = 0; j < Good_Electrons.size(); j++){
-
-//	Zek = new TLorentzVector(-100, -100, 0, 0);
-//	Zek_E = new TLorentzVector(-100, -100, 0, 0);
-//	Zek_K = new TLorentzVector(-100, -100, 0, 0);
-
 	TLorentzVector ZTemp = Good_eFakes[i] + Good_Electrons[j];
 	TLorentzVector* ztemp = new TLorentzVector(ZTemp.Px(), ZTemp.Py(), ZTemp.Pz(), ZTemp.E());
 	Zek = ztemp;
 	Zek_K = &Good_eFakes[i];
 	Zek_E = &Good_Electrons[j];
-//	cout << "Filling Zek!! \t" << ztemp->M() << endl;
-//	cout << "\t E: " << Zek_E->Pt() << endl;
-//	cout << "\t K: " << Zek_K->Pt() << endl;
 	TZek->Fill();
-//	cout << "FILLED!" << endl;
-//	cout << endl;
-
-if(delet){
-	delete ztemp;
-	delete Zek;
-	delete Zek_E;
-	delete Zek_K;}
      }
   }
 }
-
-//  cout << "filling trees..." << endl; 
-//cout << "pho pt " << tm->ReturnVarValue("Pho_Pt") << endl;
-//  if( Good_Electrons.size() > 1) cout << Good_Electrons.size() << endl;
   return kTRUE;
 }
 
 void eFakeSel::SlaveTerminate()
 {
-   // The SlaveTerminate() function is called after all entries or objects
-   // have been processed. When running with PROOF SlaveTerminate() is called
-   // on each slave server.
-
 }
 
 void eFakeSel::Terminate()
 {
-   // The Terminate() function is the last function to be called during
-   // a query. It always runs on the client, it can be used to present
-   // the results graphically or save the results to file.
-
-//  histoFile->cd();
-//  AnDir->cd();
-
   histoFile->cd();
   AnDir->cd();
-TZee->Write();
-TZep->Write();
-TZek->Write();
-TZpp->Write();
-TZpk->Write();
-TZkk->Write();
-  //OutTree->Write();
-//  histoFile->cd();
-//  histoFile->Close();
-/*
-delete TZee;
-delete TZep;
-delete TZek;
-delete TZpp;
-delete TZpk;
-delete TZkk;
-
-
-delete Zee;
-delete Zep;
-delete Zek;
-delete Zpp;
-delete Zpk;
-delete Zkk;
-
-delete Zee_E1;
-delete Zee_E2;
-delete Zep_E;
-delete Zep_P;
-delete Zek_E;
-delete Zek_K;
-delete Zpp_P1;
-delete Zpp_P2;
-delete Zpk_P;
-delete Zpk_K;
-delete Zkk_K1;
-delete Zkk_K2;
-*/
+  TZee->Write();
+  TZep->Write();
+  TZek->Write();
+  TZpp->Write();
+  TZpk->Write();
+  TZkk->Write();
 }
 
 
